@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_example/authentication/base_auth.dart';
+import 'package:firebase_example/ui/widgets/navigation_drawer.dart';
 import 'package:firebase_example/utils/colors_palette.dart';
 import 'package:flutter/material.dart';
 
@@ -23,23 +24,28 @@ class _HomeState extends State<Home> {
   /// Creates a Scaffold
   Widget _buildScaffold() {
     return Scaffold(
-        appBar: AppBar(
-
-            /// If [title] doesn't has value, then set a default title
-            title: Text(
-              'Home',
-              style: TextStyle(color: ColorsPalette.textColorLight),
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Logout'),
-                onPressed: (_signedOut),
-              )
-            ]),
         backgroundColor: ColorsPalette.backgroundColorLight,
+        appBar: _buildAppBar(),
+        drawer: NavigationDrawer(
+          user: widget.currentUser,
+          email: widget.currentUser.email,
+          photoUrl: widget.currentUser.photoUrl,
+          onSignedOut: _signedOut,
+        ),
         body: Center(
-          child: Text(widget.currentUser.displayName),
+          child: Text('Minha lista de eventos'),
         ));
+  }
+
+  ///
+  Widget _buildAppBar() {
+    return AppBar(
+      title: Text(
+        'Home',
+        style: TextStyle(color: ColorsPalette.textColorLight),
+      ),
+      iconTheme: IconThemeData(color: ColorsPalette.textColorLight),
+    );
   }
 
   ///
