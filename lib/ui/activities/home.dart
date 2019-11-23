@@ -1,8 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_example/authentication/base_auth.dart';
+import 'package:firebase_example/database/firebase_service.dart';
+import 'package:firebase_example/models/item.dart';
+import 'package:firebase_example/ui/widgets/custom_flat_button.dart';
 import 'package:firebase_example/ui/widgets/navigation_drawer.dart';
 import 'package:firebase_example/utils/colors_palette.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Home extends StatefulWidget {
   final BaseAuth auth;
@@ -32,9 +36,32 @@ class _HomeState extends State<Home> {
           photoUrl: widget.currentUser.photoUrl,
           onSignedOut: _signedOut,
         ),
-        body: Center(
-          child: Text('Minha lista de eventos'),
-        ));
+        body: _buildBody());
+  }
+
+  ///
+  Widget _buildBody() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        CustomFlatButton(
+          name: 'Create Record',
+          onTap: _create,
+        ),
+        CustomFlatButton(
+          name: 'View Record',
+          onTap: _read,
+        ),
+        CustomFlatButton(
+          name: 'Update Record',
+          onTap: _updateEvent,
+        ),
+        CustomFlatButton(
+          name: 'Delete Record',
+          onTap: _deleteEvent,
+        ),
+      ],
+    );
   }
 
   ///
@@ -46,6 +73,54 @@ class _HomeState extends State<Home> {
       ),
       iconTheme: IconThemeData(color: ColorsPalette.textColorLight),
     );
+  }
+
+  ///
+  Future<void> _create() async {
+    await FirebaseService.create(
+        Item(title: 'Item', description: 'My description'));
+
+    Fluttertoast.showToast(
+        msg: "Item created!",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 3,
+        fontSize: 16.0);
+  }
+
+  Future<void> _read() async {
+    var result = (await FirebaseService.read()).asMap();
+
+    Fluttertoast.showToast(
+        msg: '${result[0].description}',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 3,
+        fontSize: 16.0);
+  }
+
+  Future<void> _updateEvent() async {
+    await FirebaseService.update(Item(
+        id: '-LuKXfotiwOOOfahZKa_',
+        title: 'New Title',
+        description: 'New Description'));
+
+    Fluttertoast.showToast(
+        msg: "Done!",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 3,
+        fontSize: 16.0);
+  }
+
+  Future<void> _deleteEvent() async {
+    await FirebaseService.delete('-LuKXfotiwOOOfahZKa_');
+    Fluttertoast.showToast(
+        msg: "Done!",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 3,
+        fontSize: 16.0);
   }
 
   ///
